@@ -32,6 +32,11 @@ set_project() {
   gcloud config set project $project_name
 }
 
+create_cloud_bucket() {
+  local bucket_name="terraform-tfstate-$(hexdump -vn8 -e'4/4 "%08x" 1 "\n"' /dev/urandom)"
+  gcloud storage buckets create gs://$bucket_name
+}
+
 main() {
   if ! verify_params $@
   then
@@ -43,6 +48,7 @@ main() {
 
   authenticate
   set_project $project_name
+  create_cloud_bucket
 }
 
 main "$@"
