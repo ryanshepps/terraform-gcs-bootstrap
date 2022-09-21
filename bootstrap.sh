@@ -25,6 +25,13 @@ verify_project_exists() {
   gcloud projects describe $project_name
 }
 
+set_project() {
+  local project_name="${1}"
+
+  verify_project_exists $project_name
+  gcloud config set project $project_name
+}
+
 main() {
   if ! verify_params $@
   then
@@ -35,7 +42,7 @@ main() {
   local project_name="${1}"
 
   authenticate
-  verify_project_exists $project_name
+  set_project $project_name
 }
 
 main "$@"
