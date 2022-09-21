@@ -1,5 +1,7 @@
 #!/bin/bash
 
+set -e
+
 verify_params() {
   if [ $# != 1 ]
   then 
@@ -18,6 +20,11 @@ authenticate() {
   gcloud auth login
 }
 
+verify_project_exists() {
+  local project_name="${1}"
+  gcloud projects describe $project_name
+}
+
 main() {
   if ! verify_params $@
   then
@@ -28,6 +35,7 @@ main() {
   local project_name="${1}"
 
   authenticate
+  verify_project_exists $project_name
 }
 
 main "$@"
