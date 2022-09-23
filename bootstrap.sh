@@ -37,6 +37,16 @@ create_cloud_bucket() {
   gcloud storage buckets create gs://$bucket_name
 }
 
+grant_current_user_role() {
+  local currently_logged_in_user=$(gcloud auth list --filter=status:ACTIVE --format="value(account)")
+  local project_name="${1}"
+  local role_name="${2}"
+
+  gcloud projects add-iam-policy-binding $project_name \
+    --member="user:$currently_logged_in_user" \
+    --role="roles/$role_name"
+}
+
 create_service_account() {
   local project_name="${1}"
   local service_account_name="${2}"
@@ -61,6 +71,8 @@ main() {
   set_project $project_name
   create_cloud_bucket
   create_service_account $project_name $service_account_name
+  grant_current_user_role $project_name "iam.serviceAccountUser"
+  grant_current_user_role $project_name "iam.serviceAccountTokenCreator"
 }
 
 main "$@"
