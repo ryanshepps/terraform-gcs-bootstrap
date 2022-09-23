@@ -37,6 +37,17 @@ create_cloud_bucket() {
   gcloud storage buckets create gs://$bucket_name
 }
 
+create_service_account() {
+  local project_name="${1}"
+  local service_account_name="${2}"
+
+  local service_account_name="terraform"
+
+  gcloud iam service-accounts create $service_account_name \
+    --description="Neccessary for Terraform to perform actions on this project." \
+    --display-name=$service_account_name
+}
+
 main() {
   if ! verify_params $@
   then
@@ -49,6 +60,7 @@ main() {
   authenticate
   set_project $project_name
   create_cloud_bucket
+  create_service_account $project_name $service_account_name
 }
 
 main "$@"
